@@ -1,7 +1,6 @@
 # UPF Rule Pipeline Demo
 
-A deterministic C++11 teaching application that shows how a bounded PFCP-style ruleset changes
-synthetic uplink and downlink packet outcomes.
+A demo application that shows how a bounded PFCP-style ruleset changes synthetic uplink and downlink packet outcomes.
 
 > Simulation-only educational demo; not a conformant or production PFCP, GTP-U, or UPF
 > implementation.
