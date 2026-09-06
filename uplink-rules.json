@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "sessionId": "session-1",
+  "rulesetVersion": 3,
+  "limits": {
+    "maxSessions": 16,
+    "maxRulesPerType": 256,
+    "packetQueue": 1024,
+    "controlQueue": 128,
+    "reconciliationQueue": 128,
+    "reports": 1024,
+    "results": 2048,
+    "events": 8192,
+    "sinkPackets": 2048
+  },
+  "pdrs": [{
+    "id": 10,
+    "precedence": 100,
+    "sourceInterface": "N3",
+    "teid": 1001,
+    "uePrefix": "10.10.0.0/24",
+    "protocol": "UDP",
+    "localPorts": {"first": 41000, "last": 41000},
+    "remotePorts": {"first": 443, "last": 443},
+    "qfi": 9,
+    "farId": 20,
+    "qerId": 30,
+    "urrId": 40
+  }],
+  "fars": [{
+    "id": 20,
+    "action": "FORWARD",
+    "destinationInterface": "N6",
+    "tunnelOperation": "REMOVE"
+  }],
+  "qers": [{
+    "id": 30,
+    "gate": "OPEN",
+    "rateBitsPerSecond": 10000000,
+    "burstBytes": 20000,
+    "generation": 1
+  }],
+  "urrs": [{
+    "id": 40,
+    "volumeThresholdBytes": 10000,
+    "generation": 1
+  }]
+}

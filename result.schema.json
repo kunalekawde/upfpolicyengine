@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UPF Demo Run Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "scenarioId", "disclaimer", "decisions", "usageReports", "n3Sink", "n6Sink", "state", "events", "observabilityDegraded"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "runId": { "type": "string" },
+    "scenarioId": { "type": "string" },
+    "disclaimer": { "const": "Simulation-only educational demo; not a conformant or production PFCP, GTP-U, or UPF implementation." },
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } },
+    "usageReports": { "type": "array", "items": { "$ref": "#/$defs/usageReport" } },
+    "n3Sink": { "type": "array", "items": { "$ref": "packets.schema.json#/$defs/packet" } },
+    "n6Sink": { "type": "array", "items": { "$ref": "packets.schema.json#/$defs/packet" } },
+    "state": { "$ref": "#/$defs/state" },
+    "events": { "type": "array", "items": { "$ref": "#/$defs/event" } },
+    "observabilityDegraded": { "type": "boolean" },
+    "droppedEventCount": { "type": "integer", "minimum": 0 }
+  },
+  "$defs": {
+    "nullableId": { "type": ["integer", "null"], "minimum": 1 },
+    "nullableCount": { "type": ["integer", "null"], "minimum": 0 },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "applicable", "matched", "actual", "expected"],
+      "properties": {
+        "name": { "enum": ["ingress", "tunnel", "prefix", "protocol", "localPort", "remotePort", "qfi"] },
+        "applicable": { "type": "boolean" },
+        "matched": { "type": ["boolean", "null"] },
+        "actual": { "type": ["string", "integer", "null"] },
+        "expected": { "type": ["string", "integer", "null"] }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pdrId", "matched", "criteria"],
+      "properties": {
+        "pdrId": { "type": "integer", "minimum": 1 },
+        "matched": { "type": "boolean" },
+        "criteria": { "type": "array", "items": { "$ref": "#/$defs/criterion" } }
+      }
+    },
+    "tunnel": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["teid", "qfi"],
+      "properties": {
+        "teid": { "type": "integer", "minimum": 1 },
+        "qfi": { "type": "integer", "minimum": 1, "maximum": 63 }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packetId", "sessionId", "arrivalTimeMicros", "ingress", "rulesetVersion", "updateId", "candidates", "selectedPdrId", "qer", "far", "urr", "terminalResult", "sink", "transformedPacket", "observabilityDegraded"],
+      "properties": {
+        "packetId": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "arrivalTimeMicros": { "type": "integer", "minimum": 0 },
+        "ingress": { "enum": ["N3", "N6"] },
+        "rulesetVersion": { "type": "integer", "minimum": 1 },
+        "updateId": { "type": ["string", "null"] },
+        "candidates": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
+        "selectedPdrId": { "$ref": "#/$defs/nullableId" },
+        "qer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["qerId", "gate", "tokensBefore", "refillBytes", "packetChargeBytes", "tokensAfter", "outcome"],
+          "properties": {
+            "qerId": { "$ref": "#/$defs/nullableId" },
+            "gate": { "enum": ["OPEN", "CLOSED", "NOT_APPLICABLE"] },
+            "tokensBefore": { "$ref": "#/$defs/nullableCount" },
+            "refillBytes": { "$ref": "#/$defs/nullableCount" },
+            "packetChargeBytes": { "$ref": "#/$defs/nullableCount" },
+            "tokensAfter": { "$ref": "#/$defs/nullableCount" },
+            "outcome": { "enum": ["ALLOW", "GATE_CLOSED", "RATE_LIMITED", "NOT_APPLICABLE"] }
+          }
+        },
+        "far": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["farId", "action", "destination", "tunnelBefore", "tunnelAfter"],
+          "properties": {
+            "farId": { "$ref": "#/$defs/nullableId" },
+            "action": { "enum": ["FORWARD", "DROP", "NOT_APPLICABLE"] },
+            "destination": { "enum": ["N3", "N6", "NONE", "NOT_APPLICABLE"] },
+            "tunnelBefore": { "$ref": "#/$defs/tunnel" },
+            "tunnelAfter": { "$ref": "#/$defs/tunnel" }
+          }
+        },
+        "urr": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["urrId", "counted", "packetsBefore", "packetsAfter", "bytesBefore", "bytesAfter", "thresholdReached", "usageReportId"],
+          "properties": {
+            "urrId": { "$ref": "#/$defs/nullableId" },
+            "counted": { "type": "boolean" },
+            "packetsBefore": { "$ref": "#/$defs/nullableCount" },
+            "packetsAfter": { "$ref": "#/$defs/nullableCount" },
+            "bytesBefore": { "$ref": "#/$defs/nullableCount" },
+            "bytesAfter": { "$ref": "#/$defs/nullableCount" },
+            "thresholdReached": { "type": ["boolean", "null"] },
+            "usageReportId": { "type": ["string", "null"] }
+          }
+        },
+        "terminalResult": { "enum": ["FORWARDED_TO_N3", "FORWARDED_TO_N6", "FAR_DROPPED", "NO_MATCH", "MALFORMED_PACKET", "GATE_CLOSED", "RATE_LIMITED", "PACKET_QUEUE_FULL", "SHUTDOWN_DEADLINE", "ARITHMETIC_ERROR", "CAPACITY_ERROR"] },
+        "sink": { "enum": ["N3", "N6", "NONE"] },
+        "transformedPacket": { "oneOf": [{ "$ref": "packets.schema.json#/$defs/packet" }, { "type": "null" }] },
+        "observabilityDegraded": { "type": "boolean" }
+      }
+    },
+    "usageReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reportId", "sessionId", "urrId", "generation", "rulesetVersion", "packets", "payloadBytes", "thresholdBytes"],
+      "properties": {
+        "reportId": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "urrId": { "type": "integer", "minimum": 1 },
+        "generation": { "type": "integer", "minimum": 1 },
+        "rulesetVersion": { "type": "integer", "minimum": 1 },
+        "packets": { "type": "integer", "minimum": 1 },
+        "payloadBytes": { "type": "integer", "minimum": 0 },
+        "thresholdBytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intendedVersion", "appliedVersion", "activeVersion", "convergence"],
+      "properties": {
+        "intendedVersion": { "type": ["integer", "null"], "minimum": 1 },
+        "appliedVersion": { "type": ["integer", "null"], "minimum": 1 },
+        "activeVersion": { "type": ["integer", "null"], "minimum": 1 },
+        "convergence": { "enum": ["CONVERGED", "DIVERGENT", "EMPTY"] }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "runId", "scenarioId", "sequence", "simulatedTimeMicros", "component", "severity", "kind", "sessionId", "packetId", "updateId", "rulesetVersion", "data"],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "runId": { "type": "string" },
+        "scenarioId": { "type": "string" },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "simulatedTimeMicros": { "type": "integer", "minimum": 0 },
+        "component": { "type": "string" },
+        "severity": { "enum": ["INFO", "WARNING", "ERROR"] },
+        "kind": { "type": "string" },
+        "sessionId": { "type": ["string", "null"] },
+        "packetId": { "type": ["string", "null"] },
+        "updateId": { "type": ["string", "null"] },
+        "rulesetVersion": { "type": ["integer", "null"], "minimum": 1 },
+        "data": { "type": "object" }
+      }
+    }
+  }
+}

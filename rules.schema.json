@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UPF Demo Rules",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "sessionId", "rulesetVersion", "limits", "pdrs", "fars", "qers", "urrs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "sessionId": { "$ref": "#/$defs/nonEmptyId" },
+    "rulesetVersion": { "type": "integer", "minimum": 1, "maximum": 18446744073709551615 },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxSessions", "maxRulesPerType", "packetQueue", "controlQueue", "reconciliationQueue", "reports", "results", "events", "sinkPackets"],
+      "properties": {
+        "maxSessions": { "$ref": "#/$defs/positiveLimit" },
+        "maxRulesPerType": { "$ref": "#/$defs/positiveLimit" },
+        "packetQueue": { "$ref": "#/$defs/positiveLimit" },
+        "controlQueue": { "$ref": "#/$defs/positiveLimit" },
+        "reconciliationQueue": { "$ref": "#/$defs/positiveLimit" },
+        "reports": { "$ref": "#/$defs/positiveLimit" },
+        "results": { "$ref": "#/$defs/positiveLimit" },
+        "events": { "$ref": "#/$defs/positiveLimit" },
+        "sinkPackets": { "$ref": "#/$defs/positiveLimit" }
+      }
+    },
+    "pdrs": { "type": "array", "items": { "$ref": "#/$defs/pdr" } },
+    "fars": { "type": "array", "items": { "$ref": "#/$defs/far" } },
+    "qers": { "type": "array", "items": { "$ref": "#/$defs/qer" } },
+    "urrs": { "type": "array", "items": { "$ref": "#/$defs/urr" } }
+  },
+  "$defs": {
+    "nonEmptyId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9._-]+$" },
+    "positiveLimit": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+    "ruleId": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+    "portRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first", "last"],
+      "properties": {
+        "first": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "last": { "type": "integer", "minimum": 0, "maximum": 65535 }
+      }
+    },
+    "tunnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teid", "qfi"],
+      "properties": {
+        "teid": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "qfi": { "type": "integer", "minimum": 1, "maximum": 63 }
+      }
+    },
+    "pdr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "precedence", "sourceInterface", "uePrefix", "farId"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "precedence": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "sourceInterface": { "enum": ["N3", "N6"] },
+        "teid": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "uePrefix": { "type": "string", "minLength": 3, "maxLength": 64 },
+        "protocol": { "enum": ["TCP", "UDP", "ICMP", "ICMPV6"] },
+        "localPorts": { "$ref": "#/$defs/portRange" },
+        "remotePorts": { "$ref": "#/$defs/portRange" },
+        "qfi": { "type": "integer", "minimum": 1, "maximum": 63 },
+        "farId": { "$ref": "#/$defs/ruleId" },
+        "qerId": { "$ref": "#/$defs/ruleId" },
+        "urrId": { "$ref": "#/$defs/ruleId" }
+      }
+    },
+    "far": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "action"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "action": { "enum": ["FORWARD", "DROP"] },
+        "destinationInterface": { "enum": ["N3", "N6"] },
+        "tunnelOperation": { "enum": ["ADD", "REMOVE"] },
+        "tunnel": { "$ref": "#/$defs/tunnel" }
+      }
+    },
+    "qer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "gate", "rateBitsPerSecond", "burstBytes", "generation"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "gate": { "enum": ["OPEN", "CLOSED"] },
+        "rateBitsPerSecond": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "burstBytes": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "qfi": { "type": "integer", "minimum": 1, "maximum": 63 },
+        "generation": { "type": "integer", "minimum": 1, "maximum": 4294967295 }
+      }
+    },
+    "urr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "volumeThresholdBytes", "generation"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "volumeThresholdBytes": { "type": "integer", "minimum": 1, "maximum": 18446744073709551615 },
+        "generation": { "type": "integer", "minimum": 1, "maximum": 4294967295 }
+      }
+    }
+  }
+}

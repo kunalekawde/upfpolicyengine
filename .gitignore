@@ -1,0 +1,41 @@
+# C++ and CMake outputs
+build/
+build-*/
+bin/
+obj/
+out/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+*.gcda
+*.gcno
+*.gcov
+coverage/
+tests/fuzz/corpus/[0-9a-f][0-9a-f]*
+
+# Editor, environment, and temporary files
+.vscode/
+.idea/
+*.log
+*.tmp
+*.swp
+.env*
+.DS_Store
+Thumbs.db
+
+# Local Spec Kit workflow inputs
+.specify/
+.github/skills/
+speckit.*.md
+specs/
+
+# Local implementation evidence retained outside the publication set
+docs/

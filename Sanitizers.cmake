@@ -1,0 +1,8 @@
+function(upf_enable_sanitizers target)
+  if(UPF_DEMO_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    string(REPLACE "," ";" _sanitizers "${UPF_DEMO_SANITIZERS}")
+    list(JOIN _sanitizers "," _sanitizer_flags)
+    target_compile_options(${target} PRIVATE -fsanitize=${_sanitizer_flags} -fno-omit-frame-pointer)
+    target_link_options(${target} PRIVATE -fsanitize=${_sanitizer_flags})
+  endif()
+endfunction()

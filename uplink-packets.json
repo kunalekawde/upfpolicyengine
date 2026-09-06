@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "upf-demo-file-001",
+  "scenarioId": "uplink-files",
+  "packets": [{
+    "packetId": "pkt-ul-001",
+    "sessionId": "session-1",
+    "ingress": "N3",
+    "tunnel": {"teid": 1001, "qfi": 9},
+    "sourceIp": "10.10.0.7",
+    "destinationIp": "192.0.2.20",
+    "protocol": "UDP",
+    "sourcePort": 41000,
+    "destinationPort": 443,
+    "payloadBytes": 1200,
+    "arrivalTimeMicros": 0
+  }]
+}

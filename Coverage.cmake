@@ -1,0 +1,6 @@
+function(upf_enable_coverage target)
+  if(UPF_DEMO_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${target} PRIVATE --coverage -O0 -g)
+    target_link_options(${target} PRIVATE --coverage)
+  endif()
+endfunction()
