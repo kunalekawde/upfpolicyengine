@@ -23,6 +23,7 @@ jobs:
           base64 -d repo.tar.gz.b64 > /tmp/repository.tar.gz
           find . -mindepth 1 -maxdepth 1 ! -name .git ! -name repo.tar.gz.b64 -exec rm -rf {} +
           tar -xzf /tmp/repository.tar.gz
+          rm -rf .github
           rm repo.tar.gz.b64
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
