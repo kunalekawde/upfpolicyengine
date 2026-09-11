@@ -74,6 +74,7 @@ sequenceDiagram
 
 A packet never observes mixed ruleset versions. Runtime changes, report creation, sink insertion,
 and the terminal result are preflighted before commit.
+<img width="869" height="782" alt="image" src="https://github.com/user-attachments/assets/d05eadc2-db36-4b2d-8a47-a83716856360" />
 
 ## Design Plan
 
